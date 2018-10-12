@@ -14,22 +14,25 @@ function getJsDateFromExcel(excelDate) {
 class Movement extends Object{
   constructor(cells, baseCellName){
     super();
-    let recipientCellRow = parseInt( baseCellName.slice(2) ) + 2;
-    let recipientCellName = 'K' + recipientCellRow;
+    let baseCellRow = parseInt( baseCellName.slice(2) )
+
+    let recipientCellName = 'K' + (baseCellRow + 2)  ;
     
-    let okpoCellName = 'AK' + recipientCellRow;
+    let okpoCellName = 'AK' + (baseCellRow + 2);
 
-    let infoCellRow = parseInt( baseCellName.slice(2) ) + 3;
-    let infoCellName = 'J' + infoCellRow;
+    let numberCellName = 'L' + baseCellRow;
 
-    let dateCellRow = parseInt( baseCellName.slice(2) ) + 1;
-    let dateCellName = 'AM' + dateCellRow;
+    let infoCellName = 'J' + (baseCellRow + 3);
+
+    let dateCellName = 'AM' + (baseCellRow + 1);
+
     let date = getJsDateFromExcel( cells[dateCellName].v )
 
 
     this.data = {
       addr: baseCellName,
-      sum: parseFloat(cells[baseCellName].v.replace(/,/, '.')),
+      number: cells[numberCellName].v ? cells[numberCellName].v : 'None',
+      sum: parseFloat(cells[baseCellName].v.replace(/,/, '.').replace(/\s/g, "")),
       agent: cells[recipientCellName] ? cells[recipientCellName].v : 'None',
       agentEdrpou: cells[okpoCellName] ? cells[okpoCellName].v.slice(5) : 'None',
       info: cells[infoCellName] ? cells[infoCellName].v : 'None',
@@ -55,7 +58,9 @@ class  Movements extends Object{
     for( let cellName in cells ){
 
       if (cellName.slice(0,2) == valueColumn) {
-        let cellVal = parseFloat(cells[cellName].v.replace(/,/, '.'))
+        console.log( cells[cellName].v )
+        let cellVal = parseFloat(cells[cellName].v.replace(/,/, '.').replace(/\s/g, "")  ) 
+        console.log(cellVal)
 
         if (!isNaN(cellVal)) {
           let movement = new Movement(cells, cellName) 
@@ -70,18 +75,20 @@ class  Movements extends Object{
     jqET.html('')
     jqET.append('<thead></thead>')
       .find('thead')
-      .append('<th>date</th>')
-      .append('<th>income UAH</th>')
-      .append('<th>income USD</th>')
-      .append('<th>outcome UAH</th>')
-      .append('<th>outcome USD</th>')
-      .append('<th>agent</th>')
-      .append('<th>detail</th>')
+      .append('<th>номер</th>')
+      .append('<th>дата</th>')
+      .append('<th>приход UAH</th>')
+      .append('<th>приход USD</th>')
+      .append('<th>расход UAH</th>')
+      .append('<th>расход USD</th>')
+      .append('<th>контрагент</th>')
+      .append('<th>назначение</th>')
 
     const jqBody = jqET.append('<tbody></tbody>').find('tbody')
 
     this.allCredit.forEach( (ac) =>{
       jqBody.append('<tr></tr>').find('tr').last()
+        .append('<td>'+ac.data.number+'</td>')
         .append('<td>'+ac.data.date+'</td>')
         .append('<td class="money"> 0,00 </td>')
         .append('<td class="money"> 0,00 </td>')
@@ -89,18 +96,18 @@ class  Movements extends Object{
         .append('<td class="money"> 0,00 </td>')
         .append('<td>'+ac.data.agent+'</td>')
         .append('<td>'+ac.data.info+'</td>')
+    })
 
-///
-      // addr: baseCellName,
-      // sum: parseFloat(cells[baseCellName].v.replace(/,/, '.')),
-      // agent: cells[recipientCellName] ? cells[recipientCellName].v : 'None',
-      // agentEdrpou: cells[okpoCellName] ? cells[okpoCellName].v.slice(5) : 'None',
-      // info: cells[infoCellName] ? cells[infoCellName].v : 'None',
-      // date: date.format("DD.MM.YYYY")
-///      
-
-
-
+    this.allDebit.forEach( (ad) =>{
+      jqBody.append('<tr></tr>').find('tr').last()
+        .append('<td>'+ad.data.date+'</td>')
+        .append('<td>'+ac.data.number+'</td>')
+        .append('<td class="money">'+ad.data.sum.toFixed(2).replace(/\./, ',')+ '</td>')
+        .append('<td class="money"> 0,00 </td>')
+        .append('<td class="money"> 0,00 </td>')
+        .append('<td class="money"> 0,00 </td>')
+        .append('<td>'+ad.data.agent+'</td>')
+        .append('<td>'+ad.data.info+'</td>')
     })
 
 

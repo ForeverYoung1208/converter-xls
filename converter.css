@@ -1,0 +1,26 @@
+  #drop-area{
+    height:100px;
+    width: 300px;
+    background-color:red;
+  } 
+
+  table#result{
+  	margin-top: 30px;
+  	border: solid gray 0.5px;
+  	border-spacing: 0px;
+  }
+
+  table#result td{
+  	border: solid gray 0.5px;
+  	padding: 2px;
+  }
+  table#result td.money{
+    text-align: right; 
+  }
+
+
+  table#result th{
+  	border: solid gray 0.5px;
+  	padding: 2px;
+  }
+
